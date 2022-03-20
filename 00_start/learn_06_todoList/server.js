@@ -1,4 +1,12 @@
 const http = require('http');
+const { v4: uuidv4 } = require('uuid');
+//uuidv4();
+const todos = [
+    {
+        title: '今天要刷牙',
+        id: uuidv4(),
+    },
+];
 const requestListener = (req, res) => {
     const headers = {
         //下面兩行跨網域使用的
@@ -9,13 +17,13 @@ const requestListener = (req, res) => {
     };
     console.log(req.url);
     console.log(req.method);
-    if (req.url === '/' && req.method === 'GET') {
+    if (req.url === '/todos' && req.method === 'GET') {
         res.writeHead(200, headers);
         res.write(
             JSON.stringify({
                 //把json格式轉成字串傳出去
                 status: '成功',
-                data: [], //如果傳輸成功，要回傳什麼回去，如果沒有要回傳的資料就放個空陣列。
+                data: todos, //如果傳輸成功，要回傳什麼回去，如果沒有要回傳的資料就放個空陣列。
             })
         );
         res.end();
