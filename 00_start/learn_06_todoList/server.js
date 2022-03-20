@@ -1,5 +1,8 @@
+//下面這三行是檔案核心
 const http = require('http');
 const { v4: uuidv4 } = require('uuid');
+const errHandle = require('./errorHandle'); //引入另一個檔案
+
 //uuidv4();
 const todos = [
     {
@@ -51,24 +54,10 @@ const requestListener = (req, res) => {
                     );
                     res.end();
                 } else {
-                    res.writeHead(400, headers);
-                    res.write(
-                        JSON.stringify({
-                            status: 'false',
-                            message: '執行失敗，沒有title值',
-                        })
-                    );
-                    res.end();
+                    errHandle(res);
                 }
             } catch (error) {
-                res.writeHead(400, headers);
-                res.write(
-                    JSON.stringify({
-                        status: 'false',
-                        message: '執行失敗',
-                    })
-                );
-                res.end();
+                errHandle(res);
             }
         });
     } else if (req.method == 'OPTIONS') {
