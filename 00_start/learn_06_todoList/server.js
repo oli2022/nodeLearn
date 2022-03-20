@@ -33,20 +33,43 @@ const requestListener = (req, res) => {
         res.end();
     } else if (req.url === '/todos' && req.method === 'POST') {
         req.on('end', () => {
-            const title = JSON.parse(body).title;
-            const todo = {
-                title: title,
-                id: uuidv4(),
-            };
-            todos.push(todo);
-            res.writeHead(200, headers);
-            res.write(
-                JSON.stringify({
-                    status: 'OK',
-                    data: todos,
-                })
-            );
-            res.end();
+            //新增 POST API 異常行為
+            try {
+                const title = JSON.parse(body).title;
+                if (title !== undefined) {
+                    const todo = {
+                        title: title,
+                        id: uuidv4(),
+                    };
+                    todos.push(todo);
+                    res.writeHead(200, headers);
+                    res.write(
+                        JSON.stringify({
+                            status: 'OK',
+                            data: todos,
+                        })
+                    );
+                    res.end();
+                } else {
+                    res.writeHead(400, headers);
+                    res.write(
+                        JSON.stringify({
+                            status: 'false',
+                            message: '執行失敗，沒有title值',
+                        })
+                    );
+                    res.end();
+                }
+            } catch (error) {
+                res.writeHead(400, headers);
+                res.write(
+                    JSON.stringify({
+                        status: 'false',
+                        message: '執行失敗',
+                    })
+                );
+                res.end();
+            }
         });
     } else if (req.method == 'OPTIONS') {
         res.writeHead(200, headers);
