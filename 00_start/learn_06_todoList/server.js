@@ -15,6 +15,10 @@ const requestListener = (req, res) => {
         'Access-Control-Allow-Methods': 'PATCH, POST, GET,OPTIONS,DELETE',
         'Content-Type': 'application/json',
     };
+    let body = '';
+    req.on('data', (chunk) => {
+        body += chunk;
+    });
     console.log(req.url);
     console.log(req.method);
     if (req.url === '/todos' && req.method === 'GET') {
@@ -27,6 +31,23 @@ const requestListener = (req, res) => {
             })
         );
         res.end();
+    } else if (req.url === '/todos' && req.method === 'POST') {
+        req.on('end', () => {
+            const title = JSON.parse(body).title;
+            const todo = {
+                title: title,
+                id: uuidv4(),
+            };
+            todos.push(todo);
+            res.writeHead(200, headers);
+            res.write(
+                JSON.stringify({
+                    status: 'OK',
+                    data: todos,
+                })
+            );
+            res.end();
+        });
     } else if (req.method == 'OPTIONS') {
         res.writeHead(200, headers);
         res.end();
