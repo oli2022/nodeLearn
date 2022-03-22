@@ -22,8 +22,6 @@ const requestListener = (req, res) => {
     req.on('data', (chunk) => {
         body += chunk;
     });
-    console.log(req.url);
-    console.log(req.method);
     if (req.url === '/todos' && req.method === 'GET') {
         res.writeHead(200, headers);
         res.write(
@@ -60,6 +58,36 @@ const requestListener = (req, res) => {
                 errHandle(res);
             }
         });
+    } else if (req.url === '/todos' && req.method === 'DELETE') {
+        todos.length = 0;
+        res.writeHead(200, headers);
+        res.write(
+            JSON.stringify({
+                status: '刪除成功',
+                data: todos,
+                delete: true,
+            })
+        );
+        res.end();
+        //======= 刪除單筆代辦 ========
+    } else if (req.url.startsWith('/todos/') && req.method === 'DELETE') {
+        const id = req.url.split('/').pop(); //抓出id
+        const index = todos.findIndex((element) => element.id === id);
+        //判斷是否有index
+        if (index !== -1) {
+            //刪除某單筆資料
+            todos.splice(index, 1);
+            res.writeHead(200, headers);
+            res.write(
+                JSON.stringify({
+                    status: '單筆刪除成功',
+                    data: todos,
+                })
+            );
+            res.end();
+        } else {
+            errHandle(res);
+        }
     } else if (req.method == 'OPTIONS') {
         res.writeHead(200, headers);
         res.end();
