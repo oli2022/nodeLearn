@@ -88,6 +88,32 @@ const requestListener = (req, res) => {
         } else {
             errHandle(res);
         }
+        // 單筆編輯
+    } else if (req.url.startsWith('/todos/') && req.method === 'PATCH') {
+        req.on('end', () => {
+            try {
+                const todo = JSON.parse(body).title;
+                const id = req.url.split('/').pop();
+                const index = todos.findIndex((element) => element.id == id);
+                console.log(todo);
+                console.log(index);
+                if (todo !== undefined && index !== -1) {
+                    todos[index].title = todo;
+                    res.writeHead(200, headers);
+                    res.write(
+                        JSON.stringify({
+                            status: '單筆更改成功',
+                            data: todos,
+                        })
+                    );
+                    res.end();
+                } else {
+                    errHandle(res);
+                }
+            } catch {
+                errHandle(res);
+            }
+        });
     } else if (req.method == 'OPTIONS') {
         res.writeHead(200, headers);
         res.end();
